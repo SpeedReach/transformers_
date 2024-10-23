@@ -3292,7 +3292,7 @@ class GenerationMixin:
                 next_token_scores, next_tokens = torch.topk(
                     next_token_scores, n_tokens_to_keep, dim=1, largest=True, sorted=True
                 )
-
+            print("picks ", next_tokens)
             next_indices = torch.div(next_tokens, vocab_size, rounding_mode="floor")
             next_tokens = next_tokens % vocab_size
 
