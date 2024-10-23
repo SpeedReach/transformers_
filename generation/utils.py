@@ -3292,7 +3292,7 @@ class GenerationMixin:
                 next_token_scores, next_tokens = torch.topk(
                     next_token_scores, n_tokens_to_keep, dim=1, largest=True, sorted=True
                 )
-            print("candidates ", next_tokens)
+            #print("candidates ", next_tokens)
             next_indices = torch.div(next_tokens, vocab_size, rounding_mode="floor")
             next_tokens = next_tokens % vocab_size
 
@@ -3313,6 +3313,7 @@ class GenerationMixin:
             beam_idx = beam_outputs["next_beam_indices"]
 
             print("picks ", beam_next_tokens)
+            print("picked scores", beam_scores)
 
             input_ids = torch.cat([input_ids[beam_idx, :], beam_next_tokens.unsqueeze(-1)], dim=-1)
 
