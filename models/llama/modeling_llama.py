@@ -1107,9 +1107,21 @@ class LlamaModel(LlamaPreTrainedModel):
 
         return causal_mask
 
+import GPUtil
+
+def get_gpu_usage():
+    gpus = GPUtil.getGPUs()
+    total = 0
+    for gpu in gpus:
+        total += gpu.memoryUsed
+    return total
+
+
 
 class LlamaForCausalLM(LlamaPreTrainedModel):
     _tied_weights_keys = ["lm_head.weight"]
+
+    used_gpu = []
 
     def __init__(self, config):
         super().__init__(config)
@@ -1119,6 +1131,11 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    @staticmethod
+    def clear_used_gpu():
+        LlamaForCausalLM.used_gpu = []
+    
 
     def get_input_embeddings(self):
         return self.model.embed_tokens
@@ -1224,6 +1241,8 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
         if not return_dict:
             output = (logits,) + outputs[1:]
             return (loss,) + output if loss is not None else output
+
+        LlamaForCausalLM.used_gpu.append(get_gpu_usage())
 
         return CausalLMOutputWithPast(
             loss=loss,
