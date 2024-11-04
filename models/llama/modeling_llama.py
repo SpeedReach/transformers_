@@ -48,6 +48,7 @@ from ...utils import (
     replace_return_docstrings,
 )
 from .configuration_llama import LlamaConfig
+import time
 
 
 logger = logging.get_logger(__name__)
@@ -1122,6 +1123,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
     _tied_weights_keys = ["lm_head.weight"]
 
     used_gpu = []
+    time_metric = []
 
     def __init__(self, config):
         super().__init__(config)
@@ -1133,9 +1135,10 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
         self.post_init()
 
     @staticmethod
-    def clear_used_gpu():
+    def clear():
         LlamaForCausalLM.used_gpu = []
-    
+        LlamaForCausalLM.time_metric = []
+
 
     def get_input_embeddings(self):
         return self.model.embed_tokens
@@ -1243,6 +1246,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
             return (loss,) + output if loss is not None else output
 
         LlamaForCausalLM.used_gpu.append(get_gpu_usage())
+        LlamaForCausalLM.time_metric.append(time.time())
 
         return CausalLMOutputWithPast(
             loss=loss,

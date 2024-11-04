@@ -416,6 +416,7 @@ class BeamSearchScorer(BeamScorer):
         )
 
 
+
 class ConstrainedBeamSearchScorer(BeamScorer):
     r"""
     [`BeamScorer`] implementing constrained beam search decoding.
